@@ -1,0 +1,153 @@
+{
+  "theme": "Dark",
+  "archetype": "Swiss & High-Contrast (Industrial/Energy Adaptation)",
+  "design_vision": "A heavy-duty, modern industrial interface. Think fuel pumps, diesel amber, oil-black, steel greys, and hazard-yellow highlights. The UI must feel precise, reliable, and functional, avoiding standard 'SaaS' softness. No purple/violet, no Inter/Roboto. Use sharp edges, high contrast, and tactile feedback.",
+  "typography": {
+    "headings": {
+      "font_family": "Barlow Condensed, sans-serif",
+      "weights": ["600", "800", "900"],
+      "usage": "Use for all H1-H4. Must use tracking-tight to tracking-tighter for a compact, bold industrial look."
+    },
+    "body": {
+      "font_family": "IBM Plex Sans, sans-serif",
+      "weights": ["400", "500"],
+      "usage": "Use for all paragraphs, labels, and standard UI text."
+    },
+    "monospace": {
+      "font_family": "JetBrains Mono, monospace",
+      "weights": ["400", "700"],
+      "usage": "CRITICAL: Use for all numbers, prices, fuel quantities, gauges, and statuses. This provides the 'dashboard instrument' feel."
+    }
+  },
+  "colors": {
+    "background": {
+      "main": "#0A0A0A",
+      "description": "Oil Black - deepest background for main app area."
+    },
+    "surface": {
+      "card": "#121214",
+      "elevated": "#1A1A1D",
+      "description": "Steel Greys - used for cards, dialogs, and elevated sections."
+    },
+    "primary": {
+      "main": "#FACC15",
+      "hover": "#EAB308",
+      "text_on_primary": "#000000",
+      "description": "Hazard Yellow - used for primary CTAs (Book Fuel), active states, and critical highlights."
+    },
+    "secondary": {
+      "main": "#F59E0B",
+      "hover": "#D97706",
+      "text_on_secondary": "#000000",
+      "description": "Diesel Amber - used for secondary actions, en route statuses, or warning labels."
+    },
+    "border": {
+      "light": "#27272A",
+      "strong": "#3F3F46",
+      "description": "Industrial grid lines and card separators."
+    },
+    "text": {
+      "primary": "#F9FAFB",
+      "secondary": "#9CA3AF",
+      "muted": "#52525B"
+    },
+    "status": {
+      "pending": "#9CA3AF",
+      "assigned": "#3B82F6",
+      "en_route": "#F59E0B",
+      "delivered": "#10B981",
+      "cancelled": "#EF4444"
+    }
+  },
+  "spacing_and_layout": {
+    "philosophy": "Dense but structured. Use 'Control Room' grid rules for dashboards. Everything should align rigidly like a machine interface.",
+    "container_padding": "p-6 md:p-8",
+    "grid_gap": "gap-4 md:gap-6",
+    "borders": "Expose the grid. Use 1px solid borders (border-zinc-800) extensively to segment data instead of relying on shadows."
+  },
+  "component_styles": {
+    "button": {
+      "primary": "bg-yellow-400 hover:bg-yellow-500 text-black font-bold uppercase tracking-wider rounded-none border border-yellow-400 transition-all",
+      "secondary": "bg-transparent border border-zinc-700 hover:border-zinc-500 text-zinc-300 font-bold uppercase tracking-wider rounded-none transition-all",
+      "ghost": "hover:bg-zinc-800 text-zinc-400 hover:text-white rounded-none transition-all"
+    },
+    "card": {
+      "base": "bg-[#121214] border border-zinc-800 rounded-none shadow-none",
+      "header": "border-b border-zinc-800 pb-4 mb-4",
+      "hover": "hover:border-zinc-600 transition-colors duration-200"
+    },
+    "table": {
+      "base": "w-full text-left border-collapse",
+      "header": "bg-[#1A1A1D] text-zinc-400 font-mono text-xs uppercase tracking-widest py-3 border-b border-zinc-800",
+      "row": "border-b border-zinc-800 hover:bg-[#1A1A1D]/50 transition-colors",
+      "cell": "py-4 text-sm"
+    },
+    "dialog": {
+      "overlay": "bg-black/80 backdrop-blur-sm",
+      "content": "bg-[#121214] border border-zinc-700 rounded-none shadow-2xl p-6"
+    },
+    "tabs": {
+      "list": "bg-transparent border-b border-zinc-800 rounded-none p-0 flex space-x-6",
+      "trigger": "bg-transparent data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-yellow-400 data-[state=active]:text-yellow-400 text-zinc-500 rounded-none px-0 pb-3 font-bold uppercase tracking-wider",
+      "content": "pt-6"
+    },
+    "badge": {
+      "base": "font-mono text-xs px-2 py-1 uppercase rounded-none border",
+      "variants": {
+        "pending": "bg-zinc-800/50 text-zinc-400 border-zinc-700",
+        "assigned": "bg-blue-900/20 text-blue-400 border-blue-800/50",
+        "en_route": "bg-amber-900/20 text-amber-400 border-amber-800/50",
+        "delivered": "bg-emerald-900/20 text-emerald-400 border-emerald-800/50",
+        "cancelled": "bg-red-900/20 text-red-400 border-red-800/50"
+      }
+    },
+    "progress": {
+      "base": "h-2 bg-zinc-800 rounded-none overflow-hidden",
+      "indicator": "bg-yellow-400 h-full transition-all duration-500 ease-in-out"
+    },
+    "input": {
+      "base": "bg-[#0A0A0A] border border-zinc-700 rounded-none focus:ring-1 focus:ring-yellow-400 focus:border-yellow-400 text-white font-mono placeholder:text-zinc-600"
+    }
+  },
+  "motion_and_interactions": {
+    "philosophy": "Mechanical, snappy, and precise.",
+    "hover_states": "Crisp border color changes, no soft shadows. Use slight translate-x for list items on hover.",
+    "gauges": "When filling fuel quantity, use a rising bar or counter animation for the numbers.",
+    "status_pills": "When status changes, use a quick blink or flash (like an LED indicator) before settling on the new color."
+  },
+  "media_urls": [
+    {
+      "url": "https://images.unsplash.com/photo-1656988826404-bbb5ccb779bc?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMzN8MHwxfHNlYXJjaHwyfHxpbmR1c3RyaWFsJTIwZnVlbCUyMHRydWNrfGVufDB8fHx8MTc4MzA1MjQwMXww&ixlib=rb-4.1.0&q=85",
+      "category": "hero_background",
+      "description": "Large silver fuel truck. Apply a heavy black/gradient overlay (bg-black/60) to ensure text readability."
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1528458538087-f58e9ad895da?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMzN8MHwxfHNlYXJjaHwxfHxpbmR1c3RyaWFsJTIwZnVlbCUyMHRydWNrfGVufDB8fHx8MTc4MzA1MjQwMXww&ixlib=rb-4.1.0&q=85",
+      "category": "alternative_hero",
+      "description": "White and black storage truck on gray asphalt. Good for driver management pages."
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1580561346873-4a76a13dce92?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1MDV8MHwxfHNlYXJjaHwyfHxvaWwlMjByZWZpbmVyeSUyMG5pZ2h0fGVufDB8fHx8MTc4MzA1MjQwMHww&ixlib=rb-4.1.0&q=85",
+      "category": "dashboard_background",
+      "description": "Oil refinery at night. Use as a subtle, low-opacity background for the login or landing page."
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1635789146064-ffa7966c32e3?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODB8MHwxfHNlYXJjaHwyfHxkYXJrJTIwYXNwaGFsdCUyMHRleHR1cmV8ZW58MHx8fHwxNzgzMDUyNDAxfDA&ixlib=rb-4.1.0&q=85",
+      "category": "texture",
+      "description": "Dark asphalt texture. Can be used as a repeating background pattern at 5-10% opacity."
+    }
+  ],
+  "icons": {
+    "library": "@phosphor-icons/react",
+    "style": "Use 'regular' or 'bold' weight to match the thick industrial typography. Avoid thin or soft icons."
+  },
+  "instructions_to_main_agent": [
+    "Strictly follow the color palette. No purple, violet, or generic SaaS blue.",
+    "Do NOT use standard rounded corners for Shadcn components. Override them to rounded-none to maintain the brutalist industrial feel.",
+    "Implement the specified fonts (Barlow Condensed, IBM Plex Sans, JetBrains Mono) via Google Fonts in index.html or layout file.",
+    "Ensure the location picker (even if mocked) looks like a tactical radar or grid map rather than a soft consumer map.",
+    "Add data-testid attributes to all form inputs, buttons, and status badges.",
+    "For the booking form, use large, legible monospace typography for the fuel quantity and live price computation.",
+    "Apply 'tasteful grain/noise' via a subtle fixed background overlay (e.g., an SVG noise filter or the provided asphalt texture at very low opacity)."
+  ]
+}
