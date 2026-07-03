@@ -1,10 +1,16 @@
 import React from "react";
-import { Fuel, Truck, Zap, ShieldCheck, ChevronRight } from "lucide-react";
+import { Fuel, Truck, Zap, ShieldCheck, ChevronRight, Shield, UserRound } from "lucide-react";
 import { useAuth } from "@/context/AuthProvider";
 import { Navigate } from "react-router-dom";
 
 // REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
-function loginWithGoogle() {
+function loginAs(intent) {
+  // Persist chosen intent so AuthCallback can send it to the backend
+  try {
+    sessionStorage.setItem("fuel_intent", intent);
+  } catch {
+    /* noop */
+  }
   const redirectUrl = window.location.origin + "/dashboard";
   window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
 }
@@ -20,10 +26,8 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white grain relative overflow-hidden">
-      {/* grid lines */}
       <div className="absolute inset-0 grid-lines opacity-50 pointer-events-none" />
 
-      {/* Nav */}
       <header className="relative z-20 max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="w-9 h-9 bg-yellow-400 flex items-center justify-center led">
@@ -34,16 +38,24 @@ export default function Landing() {
             <div className="text-[9px] text-zinc-500 font-mono-num tracking-widest -mt-0.5">DELIVERY GRID · 24×7</div>
           </div>
         </div>
-        <button
-          onClick={loginWithGoogle}
-          data-testid="nav-signin-btn"
-          className="btn-ghost px-4 py-2 text-xs"
-        >
-          SIGN IN <ChevronRight className="w-4 h-4" />
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => loginAs("customer")}
+            data-testid="nav-signin-customer-btn"
+            className="btn-ghost px-3 py-2 text-xs"
+          >
+            <UserRound className="w-4 h-4" /> CUSTOMER SIGN IN
+          </button>
+          <button
+            onClick={() => loginAs("admin")}
+            data-testid="nav-signin-admin-btn"
+            className="btn-ghost px-3 py-2 text-xs"
+          >
+            <Shield className="w-4 h-4" /> ADMIN SIGN IN
+          </button>
+        </div>
       </header>
 
-      {/* Hero */}
       <section className="relative z-10 max-w-7xl mx-auto px-6 pt-6 pb-24 grid lg:grid-cols-12 gap-10">
         <div className="lg:col-span-7">
           <div className="inline-flex items-center gap-2 border border-zinc-800 bg-[#121214] px-3 py-1.5 mb-8">
@@ -62,27 +74,36 @@ export default function Landing() {
             reserves the nearest available tanker the moment your order lands.
           </p>
 
-          <div className="mt-10 flex flex-wrap items-center gap-4">
-            <button
-              onClick={loginWithGoogle}
-              data-testid="hero-google-signin-btn"
-              className="btn-primary px-6 py-3 text-sm"
-            >
-              <svg className="w-4 h-4" viewBox="0 0 24 24">
-                <path fill="#000" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.76h3.56c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                <path fill="#000" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.56-2.76c-.99.66-2.25 1.06-3.72 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23z"/>
-                <path fill="#000" d="M5.84 14.11a6.6 6.6 0 0 1 0-4.22V7.05H2.18a11 11 0 0 0 0 9.9l3.66-2.84z"/>
-                <path fill="#000" d="M12 5.38c1.62 0 3.06.56 4.2 1.64l3.15-3.15C17.45 2.14 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.05l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38z"/>
-              </svg>
-              CONTINUE WITH GOOGLE
-            </button>
-            <div className="font-mono-num text-xs uppercase text-zinc-500 tracking-widest">
-              · No download required
+          {/* Portal chooser */}
+          <div className="mt-10">
+            <div className="font-mono-num text-[10px] uppercase tracking-widest text-zinc-500 mb-3">
+              // Choose your portal
+            </div>
+            <div className="grid sm:grid-cols-2 gap-4 max-w-2xl">
+              <PortalCard
+                onClick={() => loginAs("customer")}
+                testId="hero-signin-customer-btn"
+                icon={UserRound}
+                title="Sign in as Customer"
+                subtitle="Book fuel to your doorstep · Track deliveries"
+                cta="CONTINUE WITH GOOGLE"
+                primary
+              />
+              <PortalCard
+                onClick={() => loginAs("admin")}
+                testId="hero-signin-admin-btn"
+                icon={Shield}
+                title="Sign in as Administrator"
+                subtitle="Manage fleet · Dispatch orders · Reports"
+                cta="CONTINUE WITH GOOGLE"
+              />
+            </div>
+            <div className="mt-4 font-mono-num text-[10px] uppercase tracking-widest text-zinc-500">
+              · No download required · Google sign-in only
             </div>
           </div>
 
-          {/* Feature strip */}
-          <div className="mt-14 grid grid-cols-3 gap-4">
+          <div className="mt-12 grid grid-cols-3 gap-4">
             {[
               { icon: Zap, label: "Auto Dispatch", sub: "< 60s" },
               { icon: Truck, label: "Fleet", sub: "24/7 tankers" },
@@ -97,7 +118,6 @@ export default function Landing() {
           </div>
         </div>
 
-        {/* Right: hero image + gauge */}
         <div className="lg:col-span-5 relative">
           <div className="relative border border-zinc-800 overflow-hidden">
             <img src={HERO_IMG} alt="Fuel truck" className="w-full h-[520px] object-cover" />
@@ -119,7 +139,6 @@ export default function Landing() {
             </div>
           </div>
 
-          {/* Floating stat */}
           <div className="absolute -left-6 top-8 hidden md:block card-industrial p-4 w-52">
             <div className="font-mono-num text-[10px] uppercase tracking-widest text-zinc-500">Today · Litres delivered</div>
             <div className="font-mono-num text-4xl font-bold text-yellow-400 mt-1">14,320</div>
@@ -130,11 +149,10 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Bottom band */}
       <section className="relative z-10 border-t border-zinc-800 bg-[#0d0d0f]">
         <div className="max-w-7xl mx-auto px-6 py-10 grid md:grid-cols-4 gap-6">
           {[
-            ["01", "Sign in", "Continue with Google — no forms."],
+            ["01", "Sign in", "Customer or Administrator — via Google."],
             ["02", "Order fuel", "Choose petrol/diesel, quantity & drop."],
             ["03", "Auto assign", "Nearest tanker locked instantly."],
             ["04", "Delivered", "Track status, pay on delivery."],
@@ -154,10 +172,41 @@ export default function Landing() {
             © {new Date().getFullYear()} FUEL/OPS · Industrial Delivery Grid
           </div>
           <div className="font-mono-num text-[10px] uppercase tracking-widest text-zinc-500">
-            v1.0.0
+            v1.1.0
           </div>
         </div>
       </footer>
     </div>
+  );
+}
+
+function PortalCard({ onClick, testId, icon: Icon, title, subtitle, cta, primary = false }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      data-testid={testId}
+      className={`group text-left border p-5 flex flex-col gap-4 transition-all ${primary ? "bg-yellow-400 border-yellow-400 hover:bg-yellow-300" : "bg-[#121214] border-zinc-800 hover:border-yellow-400"}`}
+    >
+      <div className="flex items-center justify-between">
+        <div className={`w-10 h-10 flex items-center justify-center border ${primary ? "border-black/20 bg-black/10" : "border-zinc-700 bg-[#0a0a0a] group-hover:border-yellow-400"}`}>
+          <Icon className={`w-5 h-5 ${primary ? "text-black" : "text-yellow-400"}`} />
+        </div>
+        <ChevronRight className={`w-5 h-5 ${primary ? "text-black" : "text-zinc-500 group-hover:text-yellow-400"} transition-transform group-hover:translate-x-1`} />
+      </div>
+      <div>
+        <div className={`font-display uppercase text-xl font-black leading-tight ${primary ? "text-black" : "text-white"}`}>{title}</div>
+        <div className={`font-mono-num text-[11px] uppercase tracking-widest mt-1 ${primary ? "text-black/70" : "text-zinc-500"}`}>{subtitle}</div>
+      </div>
+      <div className={`inline-flex items-center gap-2 font-mono-num text-[11px] tracking-widest uppercase border-t pt-3 mt-auto ${primary ? "border-black/20 text-black" : "border-zinc-800 text-zinc-400 group-hover:text-yellow-400"}`}>
+        <svg className="w-4 h-4" viewBox="0 0 24 24">
+          <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.76h3.56c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.56-2.76c-.99.66-2.25 1.06-3.72 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23z"/>
+          <path fill="currentColor" d="M5.84 14.11a6.6 6.6 0 0 1 0-4.22V7.05H2.18a11 11 0 0 0 0 9.9l3.66-2.84z"/>
+          <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.2 1.64l3.15-3.15C17.45 2.14 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.05l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38z"/>
+        </svg>
+        {cta}
+      </div>
+    </button>
   );
 }

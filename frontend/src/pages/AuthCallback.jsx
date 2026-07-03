@@ -24,8 +24,15 @@ export default function AuthCallback() {
         navigate("/", { replace: true });
         return;
       }
+      let intent = "customer";
       try {
-        const { data } = await api.post("/auth/callback", { session_id: sessionId });
+        intent = sessionStorage.getItem("fuel_intent") || "customer";
+        sessionStorage.removeItem("fuel_intent");
+      } catch {
+        /* noop */
+      }
+      try {
+        const { data } = await api.post("/auth/callback", { session_id: sessionId, intent });
         setUser(data);
         // Clean the URL fragment
         window.history.replaceState(null, "", window.location.pathname);

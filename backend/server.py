@@ -173,6 +173,9 @@ async def require_admin(user: User = Depends(get_current_user)) -> User:
 async def auth_callback(request: Request, response: Response):
     body = await request.json()
     session_id = body.get("session_id")
+    intent = (body.get("intent") or "customer").lower()
+    if intent not in ("admin", "customer"):
+        intent = "customer"
     if not session_id:
         raise HTTPException(status_code=400, detail="Missing session_id")
 
@@ -192,16 +195,19 @@ async def auth_callback(request: Request, response: Response):
     if existing:
         user_id = existing["user_id"]
         role = existing.get("role", "customer")
+        update_fields = {"name": name, "picture": picture}
         # Promote if listed in ADMIN_EMAILS but not yet admin
         if email in ADMIN_EMAILS and role != "admin":
             role = "admin"
-            await db.users.update_one({"user_id": user_id}, {"$set": {"role": "admin", "name": name, "picture": picture}})
-        else:
-            await db.users.update_one({"user_id": user_id}, {"$set": {"name": name, "picture": picture}})
+            update_fields["role"] = "admin"
+        # Allow role switching on sign-in based on user's chosen portal (both roles allowed)
+        elif intent != role:
+            role = intent
+            update_fields["role"] = intent
+        await db.users.update_one({"user_id": user_id}, {"$set": update_fields})
     else:
-        # First user in system becomes admin; else if in ADMIN_EMAILS admin; else customer
-        user_count = await db.users.count_documents({})
-        role = "admin" if (user_count == 0 or email in ADMIN_EMAILS) else "customer"
+        # New user: use the chosen intent (admin or customer). ADMIN_EMAILS always wins.
+        role = "admin" if email in ADMIN_EMAILS else intent
         user_id = f"user_{uuid.uuid4().hex[:12]}"
         await db.users.insert_one({
             "user_id": user_id,
