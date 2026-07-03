@@ -1,7 +1,7 @@
 import React from "react";
-import { Fuel, Truck, Zap, ShieldCheck, ChevronRight, Shield, UserRound } from "lucide-react";
+import { Fuel, Truck, Zap, ShieldCheck, ChevronRight, Shield, UserRound, AlertTriangle } from "lucide-react";
 import { useAuth } from "@/context/AuthProvider";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 
 // REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
 function loginAs(intent) {
@@ -20,6 +20,9 @@ const HERO_IMG =
 
 export default function Landing() {
   const { user, loading } = useAuth();
+  const location = useLocation();
+  const authError = location.state?.authError;
+  const adminDenied = location.state?.adminDenied;
   if (!loading && user) {
     return <Navigate to={user.role === "admin" ? "/admin" : "/dashboard"} replace />;
   }
@@ -76,6 +79,22 @@ export default function Landing() {
 
           {/* Portal chooser */}
           <div className="mt-10">
+            {authError && (
+              <div
+                data-testid="auth-error-banner"
+                className={`mb-4 flex items-start gap-3 border p-3 ${adminDenied ? "border-red-800/70 bg-red-950/30 text-red-300" : "border-zinc-800 bg-[#121214] text-zinc-300"}`}
+              >
+                <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
+                <div>
+                  <div className="font-display uppercase text-sm font-bold">
+                    {adminDenied ? "Admin access denied" : "Sign-in failed"}
+                  </div>
+                  <div className="font-mono-num text-[11px] uppercase tracking-widest mt-1 opacity-80">
+                    {authError}
+                  </div>
+                </div>
+              </div>
+            )}
             <div className="font-mono-num text-[10px] uppercase tracking-widest text-zinc-500 mb-3">
               // Choose your portal
             </div>

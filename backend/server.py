@@ -192,22 +192,45 @@ async def auth_callback(request: Request, response: Response):
 
     # Upsert user
     existing = await db.users.find_one({"email": email}, {"_id": 0})
+
+    # Determine role with strict "single admin" policy
+    admin_email_allowlisted = email in ADMIN_EMAILS
+
     if existing:
+        current_role = existing.get("role", "customer")
         user_id = existing["user_id"]
-        role = existing.get("role", "customer")
+        if intent == "admin":
+            # Allow admin sign-in only if: allowlisted OR already the admin
+            if admin_email_allowlisted or current_role == "admin":
+                role = "admin"
+            else:
+                # No other user can log in as admin
+                raise HTTPException(status_code=403, detail="Admin access is restricted to the designated administrator")
+        else:
+            # Customer portal: never demote an existing admin, keep them as admin
+            role = current_role if current_role == "admin" else "customer"
+
         update_fields = {"name": name, "picture": picture}
-        # Promote if listed in ADMIN_EMAILS but not yet admin
-        if email in ADMIN_EMAILS and role != "admin":
-            role = "admin"
-            update_fields["role"] = "admin"
-        # Allow role switching on sign-in based on user's chosen portal (both roles allowed)
-        elif intent != role:
-            role = intent
-            update_fields["role"] = intent
+        if role != current_role:
+            update_fields["role"] = role
         await db.users.update_one({"user_id": user_id}, {"$set": update_fields})
     else:
-        # New user: use the chosen intent (admin or customer). ADMIN_EMAILS always wins.
-        role = "admin" if email in ADMIN_EMAILS else intent
+        # New user
+        if intent == "admin":
+            if admin_email_allowlisted:
+                role = "admin"
+            else:
+                # If no admin exists yet AND no allowlist is configured, first admin sign-in wins.
+                # Otherwise deny.
+                if not ADMIN_EMAILS:
+                    admin_exists = await db.users.count_documents({"role": "admin"}) > 0
+                    if admin_exists:
+                        raise HTTPException(status_code=403, detail="Admin access is restricted to the designated administrator")
+                    role = "admin"
+                else:
+                    raise HTTPException(status_code=403, detail="Admin access is restricted to the designated administrator")
+        else:
+            role = "customer"
         user_id = f"user_{uuid.uuid4().hex[:12]}"
         await db.users.insert_one({
             "user_id": user_id,

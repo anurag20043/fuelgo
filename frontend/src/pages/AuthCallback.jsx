@@ -40,7 +40,12 @@ export default function AuthCallback() {
         navigate(dest, { replace: true, state: { user: data } });
       } catch (e) {
         console.error("Auth exchange failed", e);
-        navigate("/", { replace: true });
+        const msg = e?.response?.data?.detail || "Sign-in failed";
+        const denied = e?.response?.status === 403;
+        navigate("/", {
+          replace: true,
+          state: { authError: msg, adminDenied: denied },
+        });
       }
     })();
   }, [navigate, setUser]);
