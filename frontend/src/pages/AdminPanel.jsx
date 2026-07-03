@@ -59,6 +59,17 @@ export default function AdminPanel() {
     }
   };
 
+  const retryAssign = async (b) => {
+    try {
+      await api.post(`/bookings/${b.id}/retry-assignment`);
+      toast.success(`Driver assigned to ${b.id.slice(4, 12).toUpperCase()}`);
+      fetchAll();
+    } catch (err) {
+      const detail = err?.response?.data?.detail;
+      toast.error(typeof detail === "string" ? detail : "No available drivers");
+    }
+  };
+
   return (
     <AppLayout>
       <Toaster theme="dark" position="top-right" />
@@ -93,7 +104,17 @@ export default function AdminPanel() {
             showCustomer
             actions={(b) => (
               <div className="flex justify-end gap-2">
-                {NEXT_STATUS[b.status] && (
+                {b.status === "pending" && (
+                  <button
+                    onClick={() => retryAssign(b)}
+                    className="btn-primary px-2 py-1 text-[10px]"
+                    data-testid={`retry-assign-${b.id}`}
+                    title="Try to assign an available driver"
+                  >
+                    RETRY ASSIGN
+                  </button>
+                )}
+                {NEXT_STATUS[b.status] && b.status !== "pending" && (
                   <button
                     onClick={() => advance(b)}
                     className="btn-primary px-2 py-1 text-[10px]"

@@ -1,13 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { Fuel, Truck, Zap, ShieldCheck, ChevronRight, Shield, UserRound, AlertTriangle } from "lucide-react";
 import { useAuth } from "@/context/AuthProvider";
 import { Navigate, useLocation } from "react-router-dom";
+import CustomerAuthDialog from "@/components/CustomerAuthDialog";
+import { Toaster } from "sonner";
 
 // REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
-function loginAs(intent) {
-  // Persist chosen intent so AuthCallback can send it to the backend
+function loginAsAdmin() {
   try {
-    sessionStorage.setItem("fuel_intent", intent);
+    sessionStorage.setItem("fuel_intent", "admin");
   } catch {
     /* noop */
   }
@@ -23,6 +24,7 @@ export default function Landing() {
   const location = useLocation();
   const authError = location.state?.authError;
   const adminDenied = location.state?.adminDenied;
+  const [customerAuthOpen, setCustomerAuthOpen] = useState(false);
   if (!loading && user) {
     return <Navigate to={user.role === "admin" ? "/admin" : "/dashboard"} replace />;
   }
@@ -43,14 +45,14 @@ export default function Landing() {
         </div>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => loginAs("customer")}
+            onClick={() => setCustomerAuthOpen(true)}
             data-testid="nav-signin-customer-btn"
             className="btn-ghost px-3 py-2 text-xs"
           >
             <UserRound className="w-4 h-4" /> CUSTOMER SIGN IN
           </button>
           <button
-            onClick={() => loginAs("admin")}
+            onClick={loginAsAdmin}
             data-testid="nav-signin-admin-btn"
             className="btn-ghost px-3 py-2 text-xs"
           >
@@ -100,16 +102,16 @@ export default function Landing() {
             </div>
             <div className="grid sm:grid-cols-2 gap-4 max-w-2xl">
               <PortalCard
-                onClick={() => loginAs("customer")}
+                onClick={() => setCustomerAuthOpen(true)}
                 testId="hero-signin-customer-btn"
                 icon={UserRound}
                 title="Sign in as Customer"
-                subtitle="Book fuel to your doorstep · Track deliveries"
-                cta="CONTINUE WITH GOOGLE"
+                subtitle="Password · OTP · Google · Book fuel"
+                cta="OPEN SIGN-IN"
                 primary
               />
               <PortalCard
-                onClick={() => loginAs("admin")}
+                onClick={loginAsAdmin}
                 testId="hero-signin-admin-btn"
                 icon={Shield}
                 title="Sign in as Administrator"
@@ -118,7 +120,7 @@ export default function Landing() {
               />
             </div>
             <div className="mt-4 font-mono-num text-[10px] uppercase tracking-widest text-zinc-500">
-              · No download required · Google sign-in only
+              · Customers: password, OTP, or Google · Admin: Google only
             </div>
           </div>
 
@@ -191,10 +193,13 @@ export default function Landing() {
             © {new Date().getFullYear()} FUEL/OPS · Industrial Delivery Grid
           </div>
           <div className="font-mono-num text-[10px] uppercase tracking-widest text-zinc-500">
-            v1.1.0
+            v1.2.0
           </div>
         </div>
       </footer>
+
+      <CustomerAuthDialog open={customerAuthOpen} onOpenChange={setCustomerAuthOpen} />
+      <Toaster theme="dark" position="top-right" />
     </div>
   );
 }
