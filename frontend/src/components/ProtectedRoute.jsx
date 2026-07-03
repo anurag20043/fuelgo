@@ -15,10 +15,14 @@ export default function ProtectedRoute({ children, adminOnly = false }) {
     );
   }
   if (!user) {
-    return <Navigate to="/" replace state={{ from: location }} />;
+    // Admin routes send unauthenticated visitors to the dedicated admin login;
+    // everything else goes to the customer landing.
+    const redirectTo = adminOnly ? "/admin/login" : "/";
+    return <Navigate to={redirectTo} replace state={{ from: location }} />;
   }
   if (adminOnly && user.role !== "admin") {
     return <Navigate to="/dashboard" replace />;
   }
   return children;
 }
+

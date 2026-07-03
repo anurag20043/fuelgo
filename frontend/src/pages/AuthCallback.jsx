@@ -42,7 +42,9 @@ export default function AuthCallback() {
         console.error("Auth exchange failed", e);
         const msg = e?.response?.data?.detail || "Sign-in failed";
         const denied = e?.response?.status === 403;
-        navigate("/", {
+        // Admin failures go back to the admin login page; customer failures to landing.
+        const backTo = intent === "admin" ? "/admin/login" : "/";
+        navigate(backTo, {
           replace: true,
           state: { authError: msg, adminDenied: denied },
         });

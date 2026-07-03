@@ -5,6 +5,7 @@ import { AuthProvider } from "@/context/AuthProvider";
 import Landing from "@/pages/Landing";
 import Dashboard from "@/pages/Dashboard";
 import AdminPanel from "@/pages/AdminPanel";
+import AdminLogin from "@/pages/AdminLogin";
 import AuthCallback from "@/pages/AuthCallback";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
@@ -17,6 +18,7 @@ function AppRouter() {
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
+      <Route path="/admin/login" element={<AdminLogin />} />
       <Route
         path="/dashboard"
         element={
