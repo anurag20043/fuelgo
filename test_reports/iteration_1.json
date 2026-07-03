@@ -1,0 +1,31 @@
+{
+  "summary": "First-iteration end-to-end smoke on Fuel Delivery MVP (React + FastAPI + MongoDB). Backend public endpoints, RBAC, auto driver assignment, booking status transitions, driver release, and admin stats all verified via curl. Frontend flows verified with Playwright using session_token cookie: landing, customer dashboard (booking creation + live total), route protection, admin panel KPIs, driver creation. All critical paths working.",
+  "tested_scope": ["frontend", "backend", "auth", "integration"],
+  "passed": [
+    "GET /api/ -> 200 {service, status:ok}",
+    "GET /api/prices -> 200 {prices:{petrol:106.5, diesel:94.5}, currency:INR, unit:L}",
+    "GET /api/auth/me unauth -> 401",
+    "POST /api/auth/callback with no session_id -> 400",
+    "Bearer token /api/auth/me returns admin/customer user objects correctly",
+    "Customer POST /api/drivers -> 403 Admin only",
+    "Admin POST /api/drivers -> 200 with id and status='available'",
+    "GET /api/drivers lists created driver",
+    "Customer POST /api/bookings (petrol 25L) auto-assigns driver: status='assigned', driver_id/name populated, unit_price=106.5, total_price=2662.5",
+    "PATCH /api/bookings/{id}/status en_route -> delivered works",
+    "Delivered booking releases driver back to status='available'",
+    "GET /api/admin/stats returns correct revenue=2662.5, delivered=1, drivers_total/available",
+    "Customer GET /api/admin/bookings -> 403",
+    "Landing / renders hero 'FUEL DELIVERED / ON THE SECOND', hero-google-signin-btn and nav-signin-btn visible",
+    "Customer cookie -> /dashboard renders booking-form; diesel + 40L updates total to ₹3,780.00 (94.5*40)",
+    "submit-booking-btn creates booking; bookings-table populates",
+    "Customer visiting /admin is redirected to /dashboard",
+    "Admin cookie -> /admin loads admin-kpis; add-driver-btn creates driver 'Suresh' visible in table",
+    "Unauth /dashboard redirects to /"
+  ],
+  "failed": [],
+  "action_items": [],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "retest_needed": false,
+  "full_testing_deferred": true,
+  "notes": "Non-blocking: 401 console errors observed on /auth/me before cookie is set / after cookie clear — expected behaviour. Test data (users, sessions, drivers, bookings) cleaned up post-run."
+}
